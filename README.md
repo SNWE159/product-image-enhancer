@@ -1,17 +1,37 @@
 # ⚡ PixelForge AI
 
-PixelForge AI is a powerful image processing web app built with Streamlit.  
-It combines multiple AI-based image editing steps into one simple pipeline.
+PixelForge AI is an advanced image processing web app built with Streamlit.  
+It is specially designed for **online product sellers** to create clean, professional product images in seconds.
+
+🌐 **Live App:**  
+https://appuct-image-enhancer-hlg72jvsxvdmtayr36dcuw.streamlit.app/
+
+---
+
+## 🛍️ Built For
+
+PixelForge AI is developed for sellers on platforms like:
+
+- 🛒 Daraz
+- 🛒 Amazon
+- 🛒 eBay
+
+It helps you generate **high-quality product images** that improve:
+- Click-through rate (CTR)
+- Product visibility
+- Sales conversions
 
 ---
 
 ## 🚀 Features
 
-- ✂️ Background Removal (rembg)
+- ✂️ Background Removal (AI-powered)
 - 🎨 Image Enhancement (brightness, contrast, sharpness, saturation)
 - 🔍 Image Upscaling (2x, 3x, 4x)
 - 🌑 Drop Shadow Effect
-- 📦 Resize & Export Options
+- 📦 Resize for e-commerce platforms
+- 🖼️ Transparent or White Background
+- ⬇️ Export in PNG, JPEG, WEBP
 
 ---
 
@@ -36,68 +56,29 @@ pixelforge-ai/
 
 ---
 
-## ⚙️ Installation
-
-### 1. Clone repo
-```bash
-git clone https://github.com/your-username/pixelforge-ai.git
-cd pixelforge-ai
-```
-
-### 2. Create virtual environment
-```bash
-python -m venv venv
-```
-
-Activate it:
-
-**Windows**
-```bash
-venv\Scripts\activate
-```
-
-**Mac/Linux**
-```bash
-source venv/bin/activate
-```
-
-### 3. Install dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Install rembg
-```bash
-pip install rembg
-```
-
----
-
-## ▶️ Run the App
-
-```bash
-streamlit run app.py
-```
-
-Open in browser:
-```
-http://localhost:8501
-```
-
----
-
 ## 📸 How to Use
 
-1. Upload an image (PNG, JPG, WEBP)
-2. Select processing options:
+1. Open the live app  
+   👉 https://appuct-image-enhancer-hlg72jvsxvdmtayr36dcuw.streamlit.app/
+
+2. Upload your product image (PNG, JPG, WEBP)
+
+3. Select processing options:
    - Remove background
    - Enhance image
    - Upscale
    - Add shadow
-3. Adjust sliders if needed
-4. Choose output format and size
-5. Click **Process Image**
-6. Download result
+
+4. Adjust enhancement sliders (optional)
+
+5. Choose:
+   - Output size
+   - Background type
+   - File format
+
+6. Click **⚡ Process Image**
+
+7. Download your professional product image
 
 ---
 
@@ -113,28 +94,26 @@ rembg
 
 ## ⚠️ Notes
 
-- PNG format supports transparency
-- Large images may take more time
-- rembg may install extra dependencies automatically
+- PNG format is recommended for transparent backgrounds
+- High-resolution images may take more time to process
+- Internet connection is required for using the live app
 
 ---
 
 ## 💡 Future Improvements
 
-- AI super-resolution (Real-ESRGAN)
-- Object detection
-- API deployment
-- Cloud hosting
+- 🤖 AI Super-Resolution (Real-ESRGAN)
+- 🎯 Auto product centering & cropping
+- 🌐 API access for developers
+- ☁️ Cloud storage integration
+- 📱 Mobile optimization
 
 ---
 
 ## 👨‍💻 Author
 
 Siyath Epa  
+Computer Science Undergraduate  
 Sri Lanka 🇱🇰
 
 ---
-
-## 📄 License
-
-MIT License
