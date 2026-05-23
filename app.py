@@ -429,17 +429,46 @@ label[data-testid="stWidgetLabel"] {
     margin-bottom: 16px;
 }
 
+.warning-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(251,191,36,0.12);
+    border: 1px solid rgba(251,191,36,0.3);
+    color: #fbbf24;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 18px;
+    border-radius: 100px;
+    margin-bottom: 16px;
+}
+
 </style>
 """, unsafe_allow_html=True)
+
+# ─── Helper: flatten RGBA → RGB for JPEG-incompatible modes ─────────────────
+def flatten_for_jpeg(img: Image.Image) -> Image.Image:
+    """Composite transparent image onto white background for JPEG export."""
+    if img.mode == "RGBA":
+        background = Image.new("RGB", img.size, (255, 255, 255))
+        background.paste(img, mask=img.split()[3])  # use alpha channel as mask
+        return background
+    elif img.mode != "RGB":
+        return img.convert("RGB")
+    return img
 
 # ─── Helper: image → base64 ──────────────────────────────────────────────────
 def img_to_b64(img: Image.Image, fmt="PNG") -> str:
     buf = io.BytesIO()
+    if fmt.upper() in ("JPEG", "JPG"):
+        img = flatten_for_jpeg(img)
     img.save(buf, format=fmt)
     return base64.b64encode(buf.getvalue()).decode()
 
 def img_to_bytes(img: Image.Image, fmt="PNG") -> bytes:
     buf = io.BytesIO()
+    if fmt.upper() in ("JPEG", "JPG"):
+        img = flatten_for_jpeg(img)
     img.save(buf, format=fmt)
     return buf.getvalue()
 
@@ -663,6 +692,15 @@ with col_left:
     )
 
     out_fmt = st.selectbox("Export Format", ["PNG", "JPEG", "WEBP"])
+
+    # ── JPEG transparency warning ──────────────────────────────────────────
+    if out_fmt == "JPEG" and (do_remove_bg or do_shadow or bg_choice in ("Keep Transparent", "Transparent (PNG)")):
+        st.markdown("""
+        <div class="warning-pill">
+            ⚠️ JPEG doesn't support transparency — background will be filled white
+        </div>
+        """, unsafe_allow_html=True)
+
     st.markdown('</div>', unsafe_allow_html=True)
 
     size_map = {
@@ -775,14 +813,16 @@ with col_right:
         </div>
         """, unsafe_allow_html=True)
 
-        # Show result
-        if result_img.mode == "RGBA":
-            # Checkerboard
+        # Show result — for JPEG preview, display the flattened version
+        preview_img = flatten_for_jpeg(result_img) if out_fmt == "JPEG" else result_img
+
+        if preview_img.mode == "RGBA":
+            # Checkerboard for transparent images
             st.markdown('<div class="checker-bg">', unsafe_allow_html=True)
-            st.image(result_img, use_container_width=True)
+            st.image(preview_img, use_container_width=True)
             st.markdown('</div>', unsafe_allow_html=True)
         else:
-            st.image(result_img, use_container_width=True)
+            st.image(preview_img, use_container_width=True)
 
         # Download
         st.markdown("<div style='margin-top:20px;'>", unsafe_allow_html=True)
