@@ -645,7 +645,7 @@ with col_left:
         st.markdown(f"""
         <div class="success-pill">✓ Image loaded — {orig_img.size[0]}×{orig_img.size[1]}px · {uploaded.size // 1024} KB</div>
         """, unsafe_allow_html=True)
-        st.image(orig_img, use_container_width=True, caption="Original")
+        st.image(orig_img, width='stretch', caption="Original")
         st.markdown('</div>', unsafe_allow_html=True)
 
     # Pipeline Toggles
@@ -745,7 +745,7 @@ with col_right:
 
     elif not process_clicked:
         # Show original with instructions
-        st.image(orig_img, use_container_width=True)
+        st.image(orig_img, width='stretch')
         st.markdown("""
         <div style="text-align:center;margin-top:16px;color:rgba(240,238,232,0.35);font-size:13px;letter-spacing:0.5px;">
             Configure your pipeline ← then hit ⚡ Process
@@ -819,10 +819,10 @@ with col_right:
         if preview_img.mode == "RGBA":
             # Checkerboard for transparent images
             st.markdown('<div class="checker-bg">', unsafe_allow_html=True)
-            st.image(preview_img, use_container_width=True)
+            st.image(preview_img, width='stretch')
             st.markdown('</div>', unsafe_allow_html=True)
         else:
-            st.image(preview_img, use_container_width=True)
+            st.image(preview_img, width='stretch')
 
         # Download
         st.markdown("<div style='margin-top:20px;'>", unsafe_allow_html=True)
@@ -831,7 +831,7 @@ with col_right:
             data=img_bytes,
             file_name=f"pixelforge_output.{out_fmt.lower()}",
             mime=f"image/{out_fmt.lower()}",
-            use_container_width=True,
+            width='stretch',
         )
         st.markdown("</div>", unsafe_allow_html=True)
 
