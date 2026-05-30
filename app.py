@@ -491,40 +491,43 @@ def enhance_image(img: Image.Image, brightness=1.0, contrast=1.0, sharpness=1.0,
 
 def upscale_image(img: Image.Image, scale: int = 2) -> Image.Image:
     w, h = img.size
-    # Safety cap: max 3000px on any side to prevent memory crash
     new_w, new_h = w * scale, h * scale
-    max_dim = 3000
-    if new_w > max_dim or new_h > max_dim:
-        ratio = min(max_dim / new_w, max_dim / new_h)
+    # Hard cap: prevent memory crash on Streamlit Cloud (1GB RAM limit)
+    MAX_PX = 2000
+    if new_w > MAX_PX or new_h > MAX_PX:
+        ratio = min(MAX_PX / new_w, MAX_PX / new_h)
         new_w = int(new_w * ratio)
         new_h = int(new_h * ratio)
-    try:
-        from PIL import Image as PILImage
-        return img.resize((new_w, new_h), PILImage.LANCZOS)
-    except Exception:
-        return img.resize((new_w, new_h))
+        st.warning(f"⚠️ Image capped at {new_w}×{new_h}px to prevent memory overflow.")
+    return img.resize((new_w, new_h), Image.LANCZOS)
 
 def apply_shadow(img: Image.Image, blur_radius=20, opacity=120) -> Image.Image:
     if img.mode != "RGBA":
         img = img.convert("RGBA")
-    offset = 12
-    padding = blur_radius * 2
-    canvas_w = img.width + offset + padding
-    canvas_h = img.height + offset + padding
-    # Safety cap on canvas size
-    if canvas_w * canvas_h > 4000 * 4000:
-        return img  # skip shadow if image too large
-    shadow_layer = Image.new("RGBA", (canvas_w, canvas_h), (0, 0, 0, 0))
-    alpha = img.split()[3]
+    # Safety: skip shadow if image too large to avoid OOM crash
+    if img.width * img.height > 1500 * 1500:
+        st.warning("⚠️ Drop shadow skipped — image too large (reduce size or upscale factor).")
+        return img
+    offset_x, offset_y = 12, 12
+    pad = blur_radius * 2
+    canvas_w = img.width + offset_x + pad
+    canvas_h = img.height + offset_y + pad
+    # Build shadow
     shadow = Image.new("L", (canvas_w, canvas_h), 0)
-    shadow.paste(alpha, (offset + padding // 2, offset + padding // 2))
+    alpha = img.split()[3]
+    shadow.paste(alpha, (offset_x + pad // 2, offset_y + pad // 2))
     shadow = shadow.filter(ImageFilter.GaussianBlur(blur_radius))
-    shadow_rgba = Image.new("RGBA", (canvas_w, canvas_h), (0, 0, 0, opacity))
-    shadow_rgba.putalpha(shadow)
-    out = Image.alpha_composite(shadow_layer, shadow_rgba)
+    # Build shadow RGBA layer
+    shadow_layer = Image.new("RGBA", (canvas_w, canvas_h), (0, 0, 0, 0))
+    shadow_colored = Image.new("RGBA", (canvas_w, canvas_h), (0, 0, 0, opacity))
+    shadow_colored.putalpha(shadow)
+    shadow_layer = Image.alpha_composite(shadow_layer, shadow_colored)
+    # Paste original on top
+    out = Image.new("RGBA", (canvas_w, canvas_h), (0, 0, 0, 0))
+    out = Image.alpha_composite(shadow_layer, out)
     img_layer = Image.new("RGBA", (canvas_w, canvas_h), (0, 0, 0, 0))
-    img_layer.paste(img, (padding // 2, padding // 2))
-    out = Image.alpha_composite(out, img_layer)
+    img_layer.paste(img, (pad // 2, pad // 2))
+    out = Image.alpha_composite(shadow_layer, img_layer)
     return out
 
 def apply_white_background(img: Image.Image) -> Image.Image:
