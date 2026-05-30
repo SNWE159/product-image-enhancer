@@ -850,7 +850,6 @@ with col_right:
             data=img_bytes,
             file_name=f"pixelforge_output.{out_fmt.lower()}",
             mime=f"image/{out_fmt.lower()}",
-            use_container_width=True,
         )
         st.markdown("</div>", unsafe_allow_html=True)
 
